@@ -1,0 +1,27 @@
+// Linear mean reversion on a Johansen portfolio (Chan 2013, Example 2.8): hold minus the portfolio's z-score.
+// The portfolio is `w1` shares of a, `w2` of b and `w3` of c (EWA, EWC and IGE in the book), its value `p`.
+// A unit is `scale` times each weight in shares, with no division by price.
+// atls cannot estimate the weights or the lookback: they are statsmodels' first Johansen eigenvector (`det_order = 0`, `k_ar_diff = 1`, the file's columns in order) and the rounded half-life of `p`, computed over the whole file elsewhere and passed as parameters.
+// So the result carries look-ahead: a retrospective replication, not out-of-sample evidence.
+// The defaults are those estimates for `inputData_EWA_EWC_IGE.csv`, as Python's `repr` prints them (each double exactly).
+instruments {
+  a;
+  b;
+  c;
+}
+params {
+  real w1 = 0.7599635037340448;
+  real w2 = -1.0460274924201245;
+  real w3 = 0.22330592336614627;
+  int<lower=2> lookback = 23;
+  real<lower=0> scale = 100000;
+}
+series {
+  real p = w1 * a.close + w2 * b.close + w3 * c.close;
+  real units = -zscore(p, lookback);
+}
+on_bar {
+  target(a, round(units * w1 * scale));
+  target(b, round(units * w2 * scale));
+  target(c, round(units * w3 * scale));
+}

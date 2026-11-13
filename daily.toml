@@ -1,0 +1,8 @@
+# Daily strategies: decided at a close and filled at that close, by the library's decision-close rule (`fill = "decision-close"`).
+# Each command names the program and its data, e.g.:
+# cmdatl strategy backtest src/linear.atls daily.toml bars.file=data/inputData_GLD_USO.csv instruments.y=USO instruments.x=GLD
+
+[replay]
+cash = 100000
+fill = "decision-close"
+shorts = true

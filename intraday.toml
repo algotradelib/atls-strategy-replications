@@ -1,0 +1,13 @@
+# Intraday strategies on the book's stock tables: each day replayed as a point at its open and the day's bar at its close.
+# on_open runs at the open point and on_close at the day's bar; each order fills at the price it was decided on.
+# Each command names the tables, e.g.:
+#   cmdatl strategy backtest src/bog.atls intraday.toml bars.open=data/inputDataOHLCDaily_20120424_op.csv bars.high=data/inputDataOHLCDaily_20120424_hi.csv bars.low=data/inputDataOHLCDaily_20120424_lo.csv bars.close=data/inputDataOHLCDaily_20120424_cl.csv bars.names=data/inputDataOHLCDaily_20120424_stocks.csv
+
+[bars]
+open_point = true
+
+[replay]
+market = "us"
+cash = 2000000000
+fill = "decision-close"
+shorts = true

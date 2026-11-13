@@ -1,0 +1,18 @@
+# Intraday strategies on minute bars, as the data has them: nothing is invented.
+# on_open runs on each session's first bar (known at its end, 09:01 KST), reading only its open;
+# on_close on the first bar whose period holds the close: on these start-stamped bars the 15:29 bar (15:29-15:30);
+# the 15:30 closing auction's bar comes after it and enters the series only.
+# The files are KIS minute bars stamped at their start (ts, stamp, open, high, low, close, volume), one per symbol, e.g.:
+#   cmdatl strategy backtest src/longshort.atls intraday-1m.toml 'bars.files=["a.csv", "b.csv"]' 'bars.symbols=["000660", "005930"]'
+
+[bars]
+source = "csv"
+time = "ts"
+time_format = "unix"
+interval = "1m"
+
+[replay]
+market = "kr"
+cash = 2000000000
+fill = "decision-close"
+shorts = true

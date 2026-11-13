@@ -1,0 +1,47 @@
+// Post-earnings-announcement drift (Chan 2013, Example 7.2, as its Python port `pead.py` trades it): on a stock's announcement day, buy at the open when its close-to-open return is at least `entry` deviations, sell short when it is at most minus that.
+// When both hold (a zero deviation and a zero return), the short wins, as the port's second assignment does.
+// The deviation is the sample deviation of the last `window` close-to-open returns, today's included, defined only when all of them exist (pandas' `rolling(window).std()`).
+// A position is `capital / slots` dollars at the open, in whole shares, and is closed at the close.
+// The announcement calendar is a `data {}` value, a flag per stock and date (`earnannFile.csv` as `[data.announced]`): `on_open` reads the flag known at the opening bar.
+// The calendar gives dates only, so each date's flags are known at its midnight (UTC): the book's assumption that a date's announcements came after the previous close and before that day's open, which the replication cannot check.
+// The run reads the stock tables between the calendar's first and last dates, as the port's join does, so the returns and windows run over those dates.
+// `on_open` sees no window that includes today's return, so the deviation is rebuilt from sums of the previous `window - 1` returns and today's; its arithmetic differs from pandas' at the last bit, which could move a threshold tie.
+universe {}
+data { real announced; }
+params {
+  int<lower=2> window = 90;
+  real<lower=0> entry = 0.5;
+  real<lower=1> slots = 30;
+  real<lower=0> capital = 1000000000;
+}
+series {
+  real r = open / close[1] - 1;
+  real s = ts_sum(r, window - 1);
+  real q = ts_sum(r * r, window - 1);
+  real last_close = close;
+}
+state {
+  bool traded = false;
+}
+on_open {
+  real today = open / last_close - 1;
+  real sum = s + today;
+  // Cancellation can leave a tiny negative variance where the returns are equal; it is clamped at zero, so such a day still trades.
+  real variance = (q + today * today - sum * sum / window) / (window - 1);
+  real sd = sqrt(max(variance, 0));
+  real shares = round(capital / slots / open);
+  if (announced > 0 and today <= -entry * sd) {
+    target(-shares);
+    traded = true;
+  } else if (announced > 0 and today >= entry * sd) {
+    target(shares);
+    traded = true;
+  }
+}
+on_close {
+  // Only what was traded: restating zero for every stock every day costs more than the strategy itself.
+  if (traded) {
+    target(0);
+    traded = false;
+  }
+}

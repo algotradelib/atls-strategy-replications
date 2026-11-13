@@ -1,0 +1,29 @@
+// Opening gap of one future (Chan 2013, Example 7.1, as `gapFutures_FSTX.m` trades it): at the open, sell when it is at or above the last high by `entry` deviations of the daily returns, buy when at or below the last low by as much.
+// When both hold (a zero deviation), the buy wins, as the MATLAB's second assignment does.
+// A position is `capital` at the open, in whole units, and is closed at the close.
+// The deviation is the population deviation (`smartstd`) of the last `window` close-to-close returns up to the last close, over the returns that exist, as `smartMovingStd` takes them: `missing = skip` lets the first window, whose oldest return is missing, count the `window - 1` returns there are, so the first possible decision is on day `window + 1`, as the MATLAB's.
+// atls has session handlers for universes only, so this is a universe of one instrument; the run maps the file's columns and gives it a volume column the program never reads.
+universe {}
+params {
+  int<lower=2> window = 90;
+  real<lower=0> entry = 0.1;
+  real<lower=0> capital = 1000000000;
+}
+series {
+  real ret = close / close[1] - 1;
+  real sd = stdev_pop(ret, window, missing = skip);
+  real last_high = high;
+  real last_low = low;
+}
+on_open {
+  real units = round(capital / open);
+  // Both tests are undefined together (no deviation or no previous bar yet), and then neither branch runs.
+  if (open <= last_low * (1 - entry * sd)) {
+    target(units);
+  } else if (open >= last_high * (1 + entry * sd)) {
+    target(-units);
+  }
+}
+on_close {
+  target(0);
+}

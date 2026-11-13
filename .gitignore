@@ -1,0 +1,8 @@
+# Fills and reports written by runs
+*.csv
+*.json
+
+# macOS
+.DS_Store
+
+.vscode/

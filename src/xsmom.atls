@@ -1,0 +1,74 @@
+// Cross-sectional momentum (Chan 2013, Example 6.2, as its Python port `kentdaniel.py` holds it): each close, rank the stocks by their `lookback`-day return.
+// The `top` best get a long unit and the `top` worst a short unit; a stock holds the sum of its units of today and the 23 closes before (24 tranches).
+// A unit is `scale` dollars, restated in shares at every close.
+// Ranks are ascending, ties broken by instrument order, among the stocks whose return is defined; with fewer than 2 * top such stocks a stock can take both units, as in the port.
+// atls has no arrays and no windows of values computed in a handler, so the 23 earlier units are 23 states shifted at each close, and the holding period cannot be a parameter.
+// A state shifts only on a close the stock has a bar; the book's closes have no hole inside any stock's history, so each state's slot is one calendar day.
+// `missing = skip` puts every stock on one clock of periods: `close[lookback]` is the close `lookback` rows before in the table, as pandas' `pct_change(periods=252)` reads it, and a stock that starts late has no return (so no rank) until it has `lookback` rows of prices.
+// So the first ranking is on day `lookback + 1` (2007-05-14), for every stock that has a price then.
+universe {}
+options {
+  missing = skip;
+}
+params {
+  int<lower=1> lookback = 252;
+  int<lower=1> top = 50;
+  real<lower=0> scale = 100000;
+}
+series {
+  real r = close / close[lookback] - 1;
+}
+state {
+  real s1 = 0;
+  real s2 = 0;
+  real s3 = 0;
+  real s4 = 0;
+  real s5 = 0;
+  real s6 = 0;
+  real s7 = 0;
+  real s8 = 0;
+  real s9 = 0;
+  real s10 = 0;
+  real s11 = 0;
+  real s12 = 0;
+  real s13 = 0;
+  real s14 = 0;
+  real s15 = 0;
+  real s16 = 0;
+  real s17 = 0;
+  real s18 = 0;
+  real s19 = 0;
+  real s20 = 0;
+  real s21 = 0;
+  real s22 = 0;
+  real s23 = 0;
+}
+on_bar {
+  real rank = xs_rank(r);
+  real n = xs_count(r);
+  real u = defined(rank) ? (rank > n - top ? 1 : 0) - (rank <= top ? 1 : 0) : 0;
+  target(round((u + s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8 + s9 + s10 + s11 + s12 + s13 + s14 + s15 + s16 + s17 + s18 + s19 + s20 + s21 + s22 + s23) * scale / close));
+  s23 = s22;
+  s22 = s21;
+  s21 = s20;
+  s20 = s19;
+  s19 = s18;
+  s18 = s17;
+  s17 = s16;
+  s16 = s15;
+  s15 = s14;
+  s14 = s13;
+  s13 = s12;
+  s12 = s11;
+  s11 = s10;
+  s10 = s9;
+  s9 = s8;
+  s8 = s7;
+  s7 = s6;
+  s6 = s5;
+  s5 = s4;
+  s4 = s3;
+  s3 = s2;
+  s2 = s1;
+  s1 = u;
+}
