@@ -1,6 +1,6 @@
 # atls-strategy-replications
 
-Replications of [Ernest P. Chan (2013), *Algorithmic Trading: Winning Strategies and Their Rationale*. Wiley](https://www.amazon.com/dp/1118460146?lv=shuf&channelId=500&plpRedirect=mhFallback), using atls with [cmdatl](https://github.com/algotradelib/cmdatl).
+Replications of [Ernest P. Chan (2013), *Algorithmic Trading: Winning Strategies and Their Rationale*. Wiley](https://www.amazon.com/dp/1118460146), using atls with [cmdatl](https://github.com/algotradelib/cmdatl).
 
 - Time series analytics (chapter 2)
   - [ ] Augmented Dickey-Fuller Test
@@ -15,17 +15,15 @@ Replications of [Ernest P. Chan (2013), *Algorithmic Trading: Winning Strategies
   - [x] Buy-on-Gap Model (`bog`)
   - [x] Cross-Sectional Linear Long-Short (`linear-longshort`/`longshort`)
   - [ ] Arbitrage between an ETF and Component Stocks
-- Interday Momentum Strategies (chapter 6)
-  - [x] Time series momentum (`tsmom`)
-  - [x] Cross-sectional momentum (`xsmom`)
 - Mean Reversion of Currencies and Futures (chapter 5)
   - [ ] Trading Currency Cross-Rates
   - [ ] Trading Futures Calendar Spread
   - [ ] Volatility futures versus Equity index futures
+- Interday Momentum Strategies (chapter 6)
+  - [x] Time series momentum (`tsmom`)
+  - [x] Cross-sectional momentum (`xsmom`)
 - Intraday Momentum Strategies (chapter 7)
   - [x] Opening gap and post-earnings announcement drift (`gap`, `pead`)
-
-Each name is a program in [`src/`](src), `<name>.atls`, run with one of two run specs: [`daily.toml`](daily.toml) (decided at a close and filled at that close, `fill = "decision-close"`) or [`intraday.toml`](intraday.toml) (each day replayed as a point at its open and the day's bar at its close, for `on_open` and `on_close`, with the same rule).
 
 ## Install
 
@@ -34,17 +32,9 @@ atlc translates each program to C++ and cmdatl compiles it, so cmdatl also needs
 
 ## Running
 
-Put the book's files in `data/` (git ignores it), then, from the project's root:
-
 ```bash
 cmdatl strategy backtest src/<strategy_name>.atls <daily|intraday>.toml ...
 ```
-
-Every strategy names its data on the command line, and any setting there wins over the run spec's: the daily ones their file and instruments (`bars.file=...`, `instruments.NAME=...`), the intraday ones the book's five stock tables (`bars.open=...`, `bars.high=...`, `bars.low=...`, `bars.close=...`, `bars.names=...`).
-`gap` reads a long CSV instead (`bars.source=csv`, its columns named on the command line).
-`pead` reads the five stock tables and, as its `data {}` value, the book's announcement calendar `earnannFile.csv` (`data.announced.file=data/earnannFile.csv`, `data.announced.layout=wide`, `data.announced.time=Date`, `data.announced.time_format=yyyymmdd`), between the calendar's first and last dates (`replay.from=20110103`, `replay.to=20120424`).
-The calendar gives dates only: as in the book, a date's announcements are taken as known before that day's open, at 00:00 UTC (after the previous US close); the replication cannot check that assumption.
-A relative path on the command line is read against the working directory.
 
 ## Acknowledgements
 
