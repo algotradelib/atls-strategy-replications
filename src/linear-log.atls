@@ -10,9 +10,9 @@ params {
 series {
   real ly = log(y.close);
   real lx = log(x.close);
-  real hedge = ols_slope(ly, lx, lookback);
+  real hedge = roll_ols(ly, lx, lookback).slope;
   real spread = ly - hedge * lx;
-  real units = -zscore(spread, lookback);
+  real units = -roll_zscore(spread, lookback);
 }
 on_bar {
   target(y, round(units * scale / y.close));

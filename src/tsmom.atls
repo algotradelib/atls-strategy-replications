@@ -7,7 +7,7 @@ params {
   real<lower=0> scale = 10000000;
 }
 series {
-  real units = ts_sum(sign(close - close[lookback]), holddays - 1, 1);
+  real units = roll_sum(sign(close - close[lookback]), holddays - 1, 1);
 }
 on_bar {
   target(round(units * scale / close));

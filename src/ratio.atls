@@ -8,7 +8,7 @@ params {
   real<lower=0> scale = 10000000;
 }
 series {
-  real units = -zscore(y.close / x.close, lookback);
+  real units = -roll_zscore(y.close / x.close, lookback);
 }
 on_bar {
   target(y, round(units * scale / y.close));

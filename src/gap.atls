@@ -11,7 +11,7 @@ params {
 }
 series {
   real ret = close / close[1] - 1;
-  real sd = stdev_pop(ret, window, missing = skip);
+  real sd = roll_stdev_biased(ret, window, missing = skip);
   real last_high = high;
   real last_low = low;
 }

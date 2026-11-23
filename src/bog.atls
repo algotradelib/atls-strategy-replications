@@ -6,7 +6,7 @@
 universe {}
 options {
   missing = skip;
-  // The first return is missing, so `stdev(ret, window)` alone is defined a day early, over window - 1 returns.
+  // The first return is missing, so `roll_stdev(ret, window)` alone is defined a day early, over window - 1 returns.
   warmup = window + 1;
 }
 params {
@@ -18,8 +18,8 @@ params {
 }
 series {
   real ret = close / close[1] - 1;
-  real sd = stdev(ret, window);
-  real mean = sma(close, lookback);
+  real sd = roll_stdev(ret, window);
+  real mean = ma(close, lookback);
   real last_low = low;
 }
 state {

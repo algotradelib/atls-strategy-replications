@@ -18,7 +18,7 @@ params {
 }
 series {
   real p = w1 * a.close + w2 * b.close + w3 * c.close;
-  real units = -zscore(p, lookback);
+  real units = -roll_zscore(p, lookback);
 }
 on_bar {
   target(a, round(units * w1 * scale));

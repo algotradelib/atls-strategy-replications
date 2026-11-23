@@ -16,8 +16,8 @@ params {
 }
 series {
   real r = open / close[1] - 1;
-  real s = ts_sum(r, window - 1);
-  real q = ts_sum(r * r, window - 1);
+  real s = roll_sum(r, window - 1);
+  real q = roll_sum(r * r, window - 1);
   real last_close = close;
 }
 state {

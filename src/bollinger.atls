@@ -11,9 +11,9 @@ params {
   int<lower=0> scale = 1000;
 }
 series {
-  real hedge = ols_slope(y.close, x.close, lookback);
+  real hedge = roll_ols(y.close, x.close, lookback).slope;
   real spread = y.close - hedge * x.close;
-  real z = zscore(spread, lookback);
+  real z = roll_zscore(spread, lookback);
 }
 state {
   bool long = false;
