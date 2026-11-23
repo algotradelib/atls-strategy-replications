@@ -36,6 +36,12 @@ atlc translates each program to C++ and cmdatl compiles it, so cmdatl also needs
 cmdatl strategy backtest src/<strategy_name>.atls <daily|intraday>.toml ...
 ```
 
+`kalman` runs with `kalman.toml`, which names its C++ (`src/kalman.hpp`):
+
+```bash
+cmdatl strategy backtest kalman.toml ...
+```
+
 ## Acknowledgements
 
 This project was developed with the assistance of generative AI tools.
