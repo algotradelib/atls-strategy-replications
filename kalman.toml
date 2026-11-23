@@ -1,0 +1,11 @@
+# Kalman filter: daily.toml's replay, and the program's C++, src/kalman.hpp.
+# The command names the data, e.g.:
+# cmdatl strategy backtest kalman.toml bars.file=data/inputData_EWA_EWC.csv instruments.y=EWC instruments.x=EWA
+
+strategy = "src/kalman.atls"
+header = "src/kalman.hpp"
+
+[replay]
+cash = 100000
+fill = "decision-close"
+shorts = true

@@ -1,5 +1,6 @@
 // Kalman-filter mean reversion (Chan 2013, Example 3.3): the hedge of y on x drifts as a random walk.
 // It enters when the forecast error leaves one deviation, on either side.
+// The filter is C++ of the project's own, src/kalman.hpp, which kalman.toml names.
 instruments {
   y;
   x;
@@ -9,10 +10,15 @@ params {
   real<lower=0> ve = 0.001;
   int<lower=0> scale = 1000;
 }
+extern indicator kalman(real y, real x, real delta, real ve) {
+  value real beta;
+  value real error;
+  value real sd;
+}
 series {
-  real e = kf_error(y.close, x.close, delta, ve);
-  real sd = kf_sd(y.close, x.close, delta, ve);
-  real hedge = kf_beta(y.close, x.close, delta, ve);
+  real e = kalman(y.close, x.close, delta, ve).error;
+  real sd = kalman(y.close, x.close, delta, ve).sd;
+  real hedge = kalman(y.close, x.close, delta, ve).beta;
 }
 state {
   bool long = false;
